@@ -50,7 +50,7 @@ CREATE TABLE Etablissments(
 #------------------------------------------------------------
 
 CREATE TABLE Retours(
-        id_retour       Varchar NOT NULL ,
+        id_retour       Varchar (50) NOT NULL ,
         note            Int NOT NULL ,
         commentaire     Varchar (150) NOT NULL ,
         date            Date NOT NULL ,
