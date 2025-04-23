@@ -1,0 +1,8 @@
+<h1>Bienvenue sur mon site</h1>
+
+<h2>Utilisateurs :</h2>
+<ul>
+  {% for user in users %}
+    <li>{{ user.nom }} - {{ user.email }}</li>
+  {% endfor %}
+</ul>
