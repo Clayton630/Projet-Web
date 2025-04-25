@@ -1,0 +1,19 @@
+<h1>Bienvenue sur mon site</h1>
+
+<h2>Créer un utilisateur :</h2>
+<form action="/add_user" method="post">
+  <input type="text" name="nom" placeholder="Nom" required>
+  <input type="email" name="email" placeholder="Email" required>
+  <input type="text" name="mot_de_passe" placeholder="Mot de passe" required>
+  <label>
+    <input type="checkbox" name="isadmin"> Admin
+  </label>
+  <button type="submit">Ajouter</button>
+</form>
+
+<h2>Utilisateurs enregistrés :</h2>
+<ul>
+  {% for user in users %}
+    <li>{{ user.nom }} - {{ user.email }} - {% if user.isadmin %}Admin{% else %}User{% endif %}</li>
+  {% endfor %}
+</ul>
