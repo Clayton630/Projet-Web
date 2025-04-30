@@ -1,0 +1,8 @@
+<h1>Connexion</h1>
+<form action="/login" method="post">
+  <input type="email" name="email" placeholder="Email" required>
+  <input type="password" name="mot_de_passe" placeholder="Mot de passe" required>
+  <button type="submit">Se connecter</button>
+</form>
+
+<p>Pas encore de compte ? <a href="{{ url_for('main.add_user') }}">Créez un compte ici</a></p>
