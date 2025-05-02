@@ -3,27 +3,58 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Carte Leaflet avec OpenStreetMap</title>
-    <!-- CSS Leaflet -->
+    <title>Carte Leaflet avec Recherche</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        
         #map {
-            height: 100vh;
-            /* Plein écran */
+            height: calc(100vh - 50px);
+            /* Laisse la place pour l'input */
             width: 100%;
+        }
+        
+        #search-bar {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            background: #f0f0f0;
+        }
+        
+        #addressInput {
+            flex: 1;
+            padding: 8px;
+            font-size: 16px;
+        }
+        
+        #searchButton {
+            padding: 8px 16px;
+            font-size: 16px;
+            margin-left: 10px;
+            cursor: pointer;
         }
     </style>
 </head>
 
 <body>
 
+    <div id="search-bar">
+        <input type="text" id="addressInput" placeholder="Entrez une adresse...">
+        <button id="searchButton">Rechercher</button>
+    </div>
+
     <div id="map"></div>
 
-    <!-- JS Leaflet -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
         // Initialisation de la carte
-        const map = L.map('map').setView([48.8566, 2.3522], 13); // Coordonnées de Paris
+        const map = L.map('map').setView([48.8566, 2.3522], 13); // Paris
 
         // Ajout des tuiles OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -31,10 +62,38 @@
             maxZoom: 19
         }).addTo(map);
 
-        // Marqueur exemple
-        L.marker([48.8566, 2.3522]).addTo(map)
-            .bindPopup('Vous êtes à Paris.')
-            .openPopup();
+        let marker = null;
+
+        document.getElementById('searchButton').addEventListener('click', function() {
+            const address = document.getElementById('addressInput').value;
+            if (!address) return;
+
+            // Requête à l'API Nominatim
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        const lat = data[0].lat;
+                        const lon = data[0].lon;
+
+                        map.setView([lat, lon], 14);
+
+                        if (marker) {
+                            map.removeLayer(marker);
+                        }
+
+                        marker = L.marker([lat, lon]).addTo(map)
+                            .bindPopup(`Résultat pour : ${address}`)
+                            .openPopup();
+                    } else {
+                        alert("Adresse introuvable.");
+                    }
+                })
+                .catch(err => {
+                    alert("Erreur lors de la recherche.");
+                    console.error(err);
+                });
+        });
     </script>
 </body>
 
