@@ -3,98 +3,86 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Carte Leaflet avec Recherche</title>
+    <title>Carte Leaflet avec recherche fluide</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <style>
-        body,
-        html {
+        html,
+        body {
             margin: 0;
             padding: 0;
             height: 100%;
         }
         
         #map {
-            height: calc(100vh - 50px);
-            /* Laisse la place pour l'input */
+            height: 100vh;
             width: 100%;
         }
         
-        #search-bar {
-            height: 50px;
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-            background: #f0f0f0;
+        .leaflet-control-geocoder-icon {
+            background-color: #fff;
         }
         
-        #addressInput {
-            flex: 1;
-            padding: 8px;
-            font-size: 16px;
+        .leaflet-control-geocoder-form {
+            font-size: 14px;
         }
         
-        #searchButton {
-            padding: 8px 16px;
-            font-size: 16px;
-            margin-left: 10px;
-            cursor: pointer;
+        .leaflet-control-geocoder {
+            top: 10px !important;
+            right: 10px !important;
         }
     </style>
 </head>
 
 <body>
 
-    <div id="search-bar">
-        <input type="text" id="addressInput" placeholder="Entrez une adresse...">
-        <button id="searchButton">Rechercher</button>
-    </div>
-
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
     <script>
         // Initialisation de la carte
-        const map = L.map('map').setView([48.8566, 2.3522], 13); // Paris
+        const map = L.map('map').setView([48.8566, 2.3522], 13);
 
-        // Ajout des tuiles OpenStreetMap
+        // Ajout des tuiles OSM
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors',
-            maxZoom: 19
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        let marker = null;
+        // Variable pour le marqueur actif
+        let currentMarker = null;
 
-        document.getElementById('searchButton').addEventListener('click', function() {
-            const address = document.getElementById('addressInput').value;
-            if (!address) return;
-
-            // Requête à l'API Nominatim
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length > 0) {
-                        const lat = data[0].lat;
-                        const lon = data[0].lon;
-
-                        map.setView([lat, lon], 14);
-
-                        if (marker) {
-                            map.removeLayer(marker);
-                        }
-
-                        marker = L.marker([lat, lon]).addTo(map)
-                            .bindPopup(`Résultat pour : ${address}`)
-                            .openPopup();
-                    } else {
-                        alert("Adresse introuvable.");
+        // Initialisation du geocoder
+        const geocoderControl = L.Control.geocoder({
+                geocoder: L.Control.Geocoder.nominatim({
+                    geocodingQueryParams: {
+                        addressdetails: 1,
+                        countrycodes: 'fr' // Précise qu’on cherche en France
                     }
-                })
-                .catch(err => {
-                    alert("Erreur lors de la recherche.");
-                    console.error(err);
-                });
-        });
+                }),
+                defaultMarkGeocode: false // On gère le marqueur manuellement
+            })
+            .on('markgeocode', function(e) {
+                const center = e.geocode.center;
+
+                // Supprimer le marqueur précédent s'il existe
+                if (currentMarker) {
+                    map.removeLayer(currentMarker);
+                }
+
+                // Ajouter un nouveau marqueur
+                currentMarker = L.marker(center).addTo(map)
+                    .bindPopup(`<strong>Adresse :</strong><br>${e.geocode.name}`)
+                    .openPopup();
+
+                // Recentrer la carte avec animation
+                map.flyTo(center, 16);
+            })
+            .addTo(map);
     </script>
+
 </body>
 
 </html>
