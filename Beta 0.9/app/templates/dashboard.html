@@ -1,0 +1,43 @@
+<link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+<h1>Tableau de bord des Admin</h1>
+{% if not current_user.is_authenticated %}
+
+<h2>Créer un utilisateur :</h2>
+<form action="/add_user" method="post">
+    <input type="text" name="nom" placeholder="Nom" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="mot_de_passe" placeholder="Mot de passe" required>
+    <label>
+      <input type="checkbox" name="isadmin"> Admin
+    </label>
+    <button type="submit">Ajouter</button>
+</form>
+
+{% else %}
+<p>Vous êtes déjà connecté. <a href="{{ url_for('main.logout') }}">Se déconnecter</a></p>
+<a href="{{ url_for('main.home') }}"><button type="button">Aller a la page principale</button></a> {% endif %}
+
+<h2>Utilisateurs enregistrés :</h2>
+<ul>
+    {% for user in users %}
+    <li>
+        {{ user.nom }} ({{ user.email }}) {% if user.isadmin %}(Admin){% endif %}
+        <a href="{{ url_for('main.edit_user', id=user.id_user) }}">Modifier</a>
+        <form action="{{ url_for('main.delete_user', id=user.id_user) }}" method="post" style="display:inline;">
+            <button type="submit">Supprimer</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+
+<h2>Sommaire</h2>
+<a href="{{ url_for('main.etablissements') }}"><button type="button">Les établissements</button></a>
+<a href="{{ url_for('main.categories') }}"><button type="button"> Les categories</button></a>
+
+<!-- <form action="/add_etablissement" method="post">
+    <input type="text" name="nom" placeholder="Nom de l'établissement" required>
+    <input type="text" name="adresse" placeholder="Adresse" required>
+    <input type="text" name="latitude" placeholder="Latitude" required>
+    <input type="text" name="longitude" placeholder="Longitude" required>
+    <button type="submit">Ajouter</button>
+</form> -->

@@ -1,0 +1,19 @@
+<link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+<h2>Ajouter un établissement :</h2>
+
+<form action="/add_etablissement" method="post">
+  <input type="text" name="nom" placeholder="Nom de l'établissement" required />
+  <input type="text" name="adresse" placeholder="Adresse" required />
+  <input type="text" name="latitude" placeholder="Latitude" required />
+  <input type="text" name="longitude" placeholder="Longitude" required />
+  <!-- <label>Catégorie de l'établissement -->
+  <select name="id_cat" required>
+    <option value="0" selected hidden="hidden">Choisissez une catégorie</option>
+    {% for cat in categories %}
+    <option value='{{ cat["id_cat"] }}'>{{ cat["nom"] }}</option>
+    {% endfor %}
+  </select>
+  <!-- </label> -->
+  <button type="submit">Ajouter</button>
+</form>
+<a href="{{ url_for('main.dashboard') }}">< Retour au dashboard</a>

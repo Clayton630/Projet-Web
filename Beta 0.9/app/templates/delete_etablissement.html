@@ -1,0 +1,24 @@
+<link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Supprimer un établissement</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Supprimer un établissement</h1>
+    <form method="post" action="{{ url_for('delete_etablissement') }}">
+        <label for="etablissement">Sélectionnez un établissement à supprimer :</label>
+        <select name="etablissement_id" id="etablissement" required>
+            {% for etablissement in etablissements %}
+                <option value="{{ etablissement.id }}">{{ etablissement.nom }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet établissement ?');">
+            Supprimer
+        </button>
+    </form>
+    <a href="{{ url_for('index') }}">Retour à l'accueil</a>
+</body>
+</html>

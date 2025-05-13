@@ -1,0 +1,53 @@
+<link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Liste des Établissements</title>
+  </head>
+  <body>
+    <h1 style="text-align: center">Liste des Établissements</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Catégorie</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+          <th>Supprimer</th>
+          <th>Modifier</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for etablissement in etablissements %}
+        <tr>
+          <td>{{ etablissement.nom }}</td>
+          <td>{{ etablissement.nomCat }}</td>
+          <td>{{ etablissement.latitude }}</td>
+          <td>{{ etablissement.longitude }}</td>
+          <td>
+            <a
+              href="{{ url_for('main.delete_etablissement', id=etablissement.id_etab) }}"
+              ><img
+                src="../static/image/marquedecroix.png"
+                width="30"
+                height="30"
+              />
+            </a>
+          </td>
+          <td>
+            <a
+              href="{{ url_for('main.edit_etablissement', id=etablissement.id_etab) }}"
+              ><img src="../static/image/modifier.png" width="30" height="30" />
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div style="text-align: center; margin-top: 20px">
+      <a href="{{ url_for('main.dashboard') }}">< Retour au dashboard</a>
+      <a href="{{ url_for('main.add_etablissement') }}"><button type="button">Ajouter un Établissement</button></a>
+    </div>
+  </body>
+</html>
