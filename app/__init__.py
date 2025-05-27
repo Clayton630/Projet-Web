@@ -1,21 +1,22 @@
+"""Initialisation de l’application Flask et de ses extensions."""
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from flask_migrate import Migrate    # <-- AJOUTÉ
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-migrate = Migrate()                  # <-- AJOUTÉ
+
 
 def create_app():
+    """Instancie l’application, configure les extensions et enregistre les blueprints."""
     app = Flask(__name__)
     app.config.from_object("config.Config")
 
     db.init_app(app)
-    migrate.init_app(app, db)        # <-- AJOUTÉ
     login_manager.init_app(app)
 
-    from .routes import main
+    from .routes import main  # noqa: WPS433  (import inside factory)
     from . import models
 
     app.register_blueprint(main)
