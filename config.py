@@ -1,8 +1,6 @@
-"""Configuration principale de l’application Flask."""
+import os
 
 class Config:
-    """Paramètres globaux (adapter pour la production)."""
-
-    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:root@localhost:3306/retoursdb"
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = "un-truc-ultra-secret-et-unique"
+    SECRET_KEY = os.environ.get('SECRET_KEY')
