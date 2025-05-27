@@ -224,6 +224,19 @@ document.getElementById('searchInput').addEventListener('input', function(e) {
     filterEtablissements();
 });
 
+// ==== AUTOCOMPLETE : sélection 1ère suggestion avec Entrée ====
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+    if (e.key === "Enter") {
+        const list = document.getElementById("autocomplete-list");
+        const firstSuggestion = list.querySelector('div');
+        if (firstSuggestion) {
+            e.preventDefault();
+            firstSuggestion.click();
+        }
+    }
+});
+// =============================================================
+
 document.addEventListener("click", function(e) {
     if (!e.target.closest("#searchInput")) {
         document.getElementById("autocomplete-list").innerHTML = '';
