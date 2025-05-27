@@ -98,6 +98,7 @@ body {
     .vo-btn-dashboard:hover, .vo-btn-dashboard:focus { background: #5546b6 !important; color: #fff !important; border: 2.3px solid #beb8ef !important; }
     .vo-btn-logout:hover, .vo-btn-logout:focus { background: rgba(245, 247, 255, 0.95) !important; color: #5546b6 !important; border: 2.3px solid #beb8ef !important; }
 }
+
 /* Desktop: padding pour boutons */
 .dashboard-col .vo-btn-dashboard {
     margin-left: 0 !important;
@@ -418,7 +419,8 @@ button.leaflet-popup-close-button:hover {
     overflow-y: auto;
     border-top-left-radius: 28px;
     border-bottom-left-radius: 28px;
-    backdrop-filter: blur(42px) saturate(180%);
+    backdrop-filter: blur(100px) saturate(180%);
+    -webkit-backdrop-filter: blur(70px) saturate(180%);
     display: none;
     padding: 24px;
     font-family: 'Inter', 'Segoe UI', 'Poppins', sans-serif;
