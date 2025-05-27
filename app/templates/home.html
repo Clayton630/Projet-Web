@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>Accueil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Bootstrap + icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <!-- Style glass/neumorph -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+    <!-- Barre supérieure -->
+    <header class="container-fluid py-3">
+        <div class="row align-items-center">
+            <div class="col-4 dashboard-col text-start" style="padding-left:2 !important;">
+                {% if current_user.is_authenticated and current_user.isadmin %}
+                    <a href="{{ url_for('main.dashboard') }}" class="vo-btn-action vo-btn-dashboard ms-2" style="margin-left:0 !important;">
+                        <i class="bi bi-bar-chart"></i><span class="btn-text"> Dashboard Admin</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div class="col-4 text-center"></div>
+            <div class="col-4 logout-col text-end" style="padding-right:2 !important;">
+                <a href="{{ url_for('main.logout') }}" class="vo-btn vo-btn-logout me-2" style="margin-right:0 !important;">
+                    <i class="bi bi-box-arrow-right"></i><span class="btn-text"> Se déconnecter</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN : titre, recherche, autocomplete, puis carte -->
+    <main class="container d-flex flex-column align-items-center vo-main">
+        <h1 class="vo-title text-center mb-4">Bienvenue {{ current_user.nom }}</h1>
+        <div class="search-row mb-4 w-100">
+            <div class="searchbar-center mb-2 mb-lg-0">
+                <div class="search-wrapper">
+                    <span class="search-icon" id="searchIcon" aria-hidden="true">🔍</span>
+                    <input id="searchInput" type="text" placeholder="   Rechercher un établissement" autocomplete="off" aria-label="Rechercher un établissement">
+                </div>
+                <!-- Suggestions autocomplete -->
+                <div id="autocomplete-list" class="autocomplete-items"></div>
+            </div>
+            <div class="select-inline">
+                <div class="select-wrapper">
+                    <select id="categorySelect" class="form-select vo-input" aria-label="Catégories">
+                        <option value="">Catégories</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat }}">{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!-- Carte sous la barre de recherche + select -->
+        <div id="map" class="vo-map mb-4" role="region" aria-label="Carte des établissements"></div>
+    </main>
+
+    <!-- Side Panel -->
+    <aside id="side-panel" class="vo-panel" aria-modal="true" tabindex="-1">
+        <div id="side-panel-content" class="vo-panel-content">
+            <button id="close-panel" class="vo-panel-close" type="button" aria-label="Fermer le panneau latéral">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <!-- HTML fiche AJAX -->
+        </div>
+    </aside>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var etablissements = {{ etablissements|tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+</body>
+</html>
