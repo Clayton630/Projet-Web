@@ -105,15 +105,10 @@ function addCustomControls() {
              class="lucide lucide-plus-circle"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`;
     L.DomEvent.on(zoomInBtn, 'click', function(e) {
         e.preventDefault();
-        // Effet visuel d'abord
         zoomInBtn.classList.remove('clicked');
         void zoomInBtn.offsetWidth;
         zoomInBtn.classList.add('clicked');
-
-        // Petit délai avant le zoom
-        setTimeout(() => {
-            map.zoomIn();
-        }, 50);
+        setTimeout(() => { map.zoomIn(); }, 50);
     });
 
     // Bouton zoom -
@@ -125,15 +120,10 @@ function addCustomControls() {
              class="lucide lucide-minus-circle"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`;
     L.DomEvent.on(zoomOutBtn, 'click', function(e) {
         e.preventDefault();
-        // Effet visuel d'abord
         zoomOutBtn.classList.remove('clicked');
         void zoomOutBtn.offsetWidth;
         zoomOutBtn.classList.add('clicked');
-
-        // Petit délai avant le zoom
-        setTimeout(() => {
-            map.zoomOut();
-        }, 50);
+        setTimeout(() => { map.zoomOut(); }, 50);
     });
 
     // Bouton recentrer
@@ -157,7 +147,6 @@ function addCustomControls() {
                 alert("Impossible d'accéder à votre position.");
             });
         }
-
         recenterBtn.classList.remove('clicked');
         void recenterBtn.offsetWidth;
         recenterBtn.classList.add('clicked');
@@ -224,7 +213,7 @@ document.getElementById('searchInput').addEventListener('input', function(e) {
     filterEtablissements();
 });
 
-// ==== AUTOCOMPLETE : sélection 1ère suggestion avec Entrée ====
+// Sélection de la première suggestion à l'Entrée
 document.getElementById('searchInput').addEventListener('keydown', function(e) {
     if (e.key === "Enter") {
         const list = document.getElementById("autocomplete-list");
@@ -235,7 +224,6 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
         }
     }
 });
-// =============================================================
 
 document.addEventListener("click", function(e) {
     if (!e.target.closest("#searchInput")) {
@@ -245,18 +233,15 @@ document.addEventListener("click", function(e) {
 
 document.getElementById('categorySelect').addEventListener('change', filterEtablissements);
 
-// Gestion panneau latéral
 document.body.addEventListener('click', function(e){
     if(e.target.matches('.etab-link')) {
         e.preventDefault();
         let etabId = e.target.getAttribute('data-id');
         const panel = document.getElementById('side-panel');
         const content = document.getElementById('side-panel-content');
-
         fetch(`/fiche_etablissement_fragment/${etabId}`)
             .then(resp => resp.text())
             .then(html => {
-                // Si déjà ouvert, juste remplacer le contenu
                 content.innerHTML = '<button id="close-panel" class="leaflet-popup-close-button" aria-label="Fermer">×</button>' + html;
                 panel.style.display = 'block';
                 panel.classList.remove('hide-panel');
@@ -283,14 +268,13 @@ document.addEventListener('keydown', function(e) {
 function closeSidePanel() {
     const panel = document.getElementById('side-panel');
     const content = document.getElementById('side-panel-content');
-
     panel.classList.add('hide-panel');
     setTimeout(() => {
         panel.style.display = 'none';
         content.innerHTML = '<button id="close-panel" class="leaflet-popup-close-button" aria-label="Fermer">×</button>';
         panel.classList.remove('hide-panel');
         document.body.style.overflow = "";
-    }, 300); // durée = animation CSS
+    }, 300);
 }
 
 const searchInput = document.getElementById('searchInput');
@@ -306,10 +290,8 @@ searchInput.addEventListener('input', () => {
 document.body.addEventListener('click', function(e) {
     if (e.target.closest('.edit-avis-btn')) {
         e.preventDefault();
-
         const btn = e.target.closest('.edit-avis-btn');
         const url = btn.getAttribute('data-url');
-
         fetch(url)
             .then(resp => resp.text())
             .then(html => {
@@ -322,3 +304,64 @@ document.body.addEventListener('click', function(e) {
             });
     }
 });
+
+// --------- BOUTON "X" CLEAR SEARCH ---------
+(function() {
+    const searchInput = document.getElementById('searchInput');
+    const searchIcon = document.getElementById('searchIcon');
+    const parent = searchInput.parentNode;
+
+    // Positionne le parent en relative si ce n'est pas déjà le cas
+    if (getComputedStyle(parent).position === 'static') {
+        parent.style.position = 'relative';
+    }
+
+    // Crée le bouton X si pas déjà présent
+    let clearBtn = parent.querySelector('.clear-search-btn');
+    if (!clearBtn) {
+        clearBtn = document.createElement('button');
+        clearBtn.type = 'button';
+        clearBtn.innerHTML = '×';
+        clearBtn.className = 'clear-search-btn';
+        clearBtn.setAttribute('aria-label', 'Effacer');
+        clearBtn.style.position = 'absolute';
+        clearBtn.style.right = '12px'; // Ajuste ici si besoin (ex: 36px si la loupe est à droite)
+        clearBtn.style.top = '50%';
+        clearBtn.style.transform = 'translateY(-50%)';
+        clearBtn.style.background = 'none';
+        clearBtn.style.border = 'none';
+        clearBtn.style.fontSize = '20px';
+        clearBtn.style.cursor = 'pointer';
+        clearBtn.style.opacity = '0';
+        clearBtn.style.transition = 'opacity 0.15s';
+        clearBtn.style.padding = '0';
+        clearBtn.style.zIndex = '10';
+        clearBtn.style.lineHeight = '1';
+        clearBtn.style.pointerEvents = 'none';
+        parent.appendChild(clearBtn);
+    }
+
+    function toggleIcons() {
+        if (searchInput.value.trim() !== "") {
+            clearBtn.style.opacity = '1';
+            clearBtn.style.pointerEvents = 'auto';
+            if (searchIcon) searchIcon.style.opacity = '0';
+        } else {
+            clearBtn.style.opacity = '0';
+            clearBtn.style.pointerEvents = 'none';
+            if (searchIcon) searchIcon.style.opacity = '1';
+        }
+    }
+
+    clearBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        searchInput.value = '';
+        toggleIcons();
+        filterEtablissements();
+        document.getElementById("autocomplete-list").innerHTML = '';
+        searchInput.focus();
+    });
+
+    searchInput.addEventListener('input', toggleIcons);
+    toggleIcons();
+})();
