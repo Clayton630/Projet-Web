@@ -4,57 +4,61 @@
     <meta charset="UTF-8">
     <title>Créer un compte</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-
+    <!-- MAP EN BACKGROUND -->
+    <div id="bg-map"></div>
     <div class="login-container">
-
         <form action="{{ url_for('main.add_user') }}" method="post" class="glass-form" style="text-align: center;">
-
             <h1 class="vo-title">Créer un compte</h1>
 
-            <!-- Nom -->
-            <div style="display: flex; justify-content: center;">
-                <input type="text" name="nom" placeholder="Nom" id="searchInput" required style="max-width: 320px; width: 100%;">
+            <div class="search-wrapper">
+                <input type="text" name="nom" placeholder="Nom" id="searchInput" required>
+            </div>
+            <div class="search-wrapper">
+                <input type="email" name="email" placeholder="Email" id="searchInput" required>
+            </div>
+            <div class="search-wrapper">
+                <input type="password" name="mot_de_passe" placeholder="Mot de passe" id="searchInput" required>
             </div>
 
-            <div style="height: 14px;"></div>
-
-            <!-- Email -->
-            <div style="display: flex; justify-content: center;">
-                <input type="email" name="email" placeholder="Email" id="searchInput" required style="max-width: 320px; width: 100%;">
+            <div class="action-btn-wrapper">
+                <button type="submit" class="vo-btn-action card-btn-action">Créer un compte</button>
             </div>
 
-            <div style="height: 14px;"></div>
-
-            <!-- Mot de passe -->
-            <div style="display: flex; justify-content: center;">
-                <input type="password" name="mot_de_passe" placeholder="Mot de passe" id="searchInput" required style="max-width: 320px; width: 100%;">
-            </div>
-
-            <div style="height: 14px;"></div>
-
-            <!-- Checkbox admin -->
-            <div style="text-align: center; font-weight: 600;">
-                <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
-                    <input type="checkbox" name="isadmin"> Administrateur ?
-                </label>
-            </div>
-
-            <div style="margin-top: 14px;">
-                <button type="submit" class="vo-btn-action">
-                    Créer un compte
-                </button>
-            </div>
+            <p class="switch-form-link">
+                Vous avez déjà un compte ?
+                <a href="{{ url_for('main.login') }}">Connectez-vous ici</a>
+            </p>
         </form>
-
-        <p style="text-align: center; margin-top: 16px;">
-            Vous avez déjà un compte ?
-            <a href="{{ url_for('main.login') }}">Connectez-vous ici</a>
-        </p>
-
     </div>
+    <!-- MAP SCRIPT -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var bgMap = L.map('bg-map', {
+            zoomControl: false,
+            attributionControl: false,
+            dragging: false,
+            scrollWheelZoom: false,
+            doubleClickZoom: false,
+            boxZoom: false,
+            keyboard: false,
+            tap: false,
+            touchZoom: false,
+            zoomSnap: 0,
+            inertia: false,
+            interactive: false
+        }).setView([43.116669, 5.93333], 13);
 
+        L.tileLayer('https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}@2x.png?key=1XPmmAxswHqtzHfGMCGh', {
+            maxZoom: 18
+        }).addTo(bgMap);
+
+        bgMap._container.style.pointerEvents = "none";
+    });
+    </script>
 </body>
 </html>
