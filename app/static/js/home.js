@@ -158,7 +158,7 @@ function addCustomControls() {
 
     controlsContainer.style.position = 'absolute';
     controlsContainer.style.top = '10px';
-    controlsContainer.style.left = '10px';
+    controlsContainer.style.right = '10px';
     controlsContainer.style.zIndex = '1000';
     controlsContainer.style.display = 'flex';
     controlsContainer.style.gap = '8px';
