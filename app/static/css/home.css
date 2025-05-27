@@ -1,10 +1,16 @@
 /* ==========================================================================
+   0. Police universelle : Inter partout, priorité absolue
+   ========================================================================== */
+html, body, * {
+  font-family: 'Segoe UI', sans-serif !important;
+}
+
+/* ==========================================================================
    1. Styles généraux de base
    ========================================================================== */
 body {
     min-height: 100vh;
     background: #ebeff4;
-    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
     color: #353648;
     margin: 0;
     padding: 0;
@@ -58,8 +64,6 @@ body {
     box-shadow: 0 2px 6px #cfc9f5cc, 0 1.2px 0 #c6bef8, 0 0.6px 0 #fff, 0 1px 8px #d6e3f977;
     border: 2.3px solid #d6e3f9;
 }
-/* --- Ajout : Padding gauche/droite dashboard/logout sur desktop et mobile --- */
-
 @media (max-width: 520px) {
     .vo-btn, .vo-btn-action {
         font-size: 0.97em;
@@ -67,7 +71,6 @@ body {
         min-width: 0;
     }
 }
-/* --- Ajout : Correction alignement mobile du bouton de déconnexion (logout) --- */
 @media (max-width: 640px) {
     .dashboard-col {
         display: flex !important;
@@ -98,15 +101,8 @@ body {
     .vo-btn-dashboard:hover, .vo-btn-dashboard:focus { background: #5546b6 !important; color: #fff !important; border: 2.3px solid #beb8ef !important; }
     .vo-btn-logout:hover, .vo-btn-logout:focus { background: rgba(245, 247, 255, 0.95) !important; color: #5546b6 !important; border: 2.3px solid #beb8ef !important; }
 }
-
-/* Desktop: padding pour boutons */
-.dashboard-col .vo-btn-dashboard {
-    margin-left: 0 !important;
-}
-.logout-col .vo-btn-logout {
-    margin-right: 0 !important;
-}
-/* header col-4 adaptatif mobile */
+.dashboard-col .vo-btn-dashboard { margin-left: 0 !important; }
+.logout-col .vo-btn-logout { margin-right: 0 !important; }
 @media (max-width: 640px) {
     .row.align-items-center {
         display: flex !important;
@@ -134,7 +130,6 @@ body {
 .vo-title {
     margin-top: 44px;
     margin-bottom: 34px;
-    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
     font-weight: 900;
     font-size: clamp(2.6rem, 6vw, 3.9rem);
     background: linear-gradient(97deg, #36b2e4e2 10%, #b696e7 60%, #6361bfdf 100%);
@@ -228,7 +223,6 @@ body {
     align-items: stretch;
 }
 #searchInput, input:-webkit-autofill {
-    font-family: inherit;
     font-size: 1.13em;
     border-radius: 999px;
     border: none;
@@ -423,7 +417,6 @@ button.leaflet-popup-close-button:hover {
     -webkit-backdrop-filter: blur(70px) saturate(180%);
     display: none;
     padding: 24px;
-    font-family: 'Inter', 'Segoe UI', 'Poppins', sans-serif;
     animation: slideIn 0.3s ease-out forwards;
     transition: transform 0.3s ease-out, opacity 0.3s ease-out;
     min-width: 0;
@@ -446,7 +439,6 @@ button.leaflet-popup-close-button:hover {
     to   { transform: translateX(100%); opacity: 0;}
 }
 .vo-panel-content, #side-panel-content {
-    font-family: 'Poppins', 'Segoe UI', 'Inter', sans-serif;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -474,7 +466,6 @@ button.leaflet-popup-close-button:hover {
     border-radius: 20px;
     box-shadow: 0 6px 20px rgba(101, 64, 189, 0.1), 0 0 10px rgba(101, 64, 189, 0.06);
     padding: 12px 18px !important;
-    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
     color: #353648;
     font-weight: 600;
     font-size: 0.9rem;
@@ -532,7 +523,6 @@ button.leaflet-popup-close-button:hover {
     font-size: 1.1em;
     line-height: 1;
     color: #c7bbe3;
-    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
     letter-spacing: 2px;
     unicode-bidi: bidi-override;
     overflow: hidden;
@@ -545,7 +535,6 @@ button.leaflet-popup-close-button:hover {
     overflow: hidden;
     color: #5e35b1;
     width: 0;
-    font-family: inherit;
     font-size: inherit;
     line-height: 1;
     height: 100%;
@@ -554,7 +543,6 @@ button.leaflet-popup-close-button:hover {
 .stars-outer::before,
 .stars-inner::before {
     content: "★★★★★";
-    font-family: inherit;
     font-size: inherit;
     line-height: 1;
 }
@@ -663,7 +651,6 @@ button.leaflet-popup-close-button:hover {
     border-top-left-radius: 24px;
     border-bottom-left-radius: 24px;
     box-shadow: -12px 0 30px rgba(0, 0, 0, 0.12);
-    font-family: 'Inter', 'Segoe UI', 'Poppins', sans-serif;
     animation: slideIn 0.3s ease-out forwards;
     transition: transform 0.3s ease-out, opacity 0.3s ease-out;
     min-width: 0;
@@ -680,19 +667,10 @@ button.leaflet-popup-close-button:hover {
         left: 0;
     }
 }
-@keyframes slideIn {
-    from { transform: translateX(100%); opacity: 0;}
-    to   { transform: translateX(0); opacity: 1;}
-}
-@keyframes slideOut {
-    from { transform: translateX(0); opacity: 1;}
-    to   { transform: translateX(100%); opacity: 0;}
-}
 #side-panel.hide-panel {
     animation: slideOut 0.3s ease-in-out forwards;
 }
 #side-panel-content {
-    font-family: 'Poppins', 'Segoe UI', 'Inter', sans-serif;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -859,7 +837,6 @@ button.leaflet-popup-close-button:hover {
 }
 @media (max-width: 600px) {
   #map.vo-map {
-    /* On prend la hauteur du viewport visible - l'espace de header/h1/search */
     height: calc(100dvh - 307px) !important;
     min-height: 120px !important;
     max-height: calc(100dvh - 32px) !important;
@@ -868,18 +845,14 @@ button.leaflet-popup-close-button:hover {
     width: 100vw !important;
     position: relative;
   }
-}
-@media (max-width: 600px) {
   .custom-control-container {
     top: auto !important;
-    bottom: 16px !important;      /* Décale les boutons à 16px du bas (adapte la valeur) */
+    bottom: 16px !important;
     right: 10px !important;
     left: auto !important;
     flex-direction: row !important;
     z-index: 1100 !important;
   }
-}
-@media (max-width: 600px) {
   html, body {
     overflow: hidden !important;
     height: 100vh !important;
@@ -903,6 +876,7 @@ button.leaflet-popup-close-button:hover {
     z-index: 4000;
   }
 }
+
 @media (min-width: 601px) {
   .vo-main {
     padding: 0 !important;
@@ -914,20 +888,19 @@ button.leaflet-popup-close-button:hover {
     align-items: center !important;
   }
   #map.vo-map {
-    width: 99vw !important;           /* bord à bord (1vw de marge visuelle) */
-    max-width: 2000px !important;     /* limite sur ultra large écrans */
+    width: 99vw !important;
+    max-width: 2000px !important;
     min-width: 300px !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
-    margin-bottom: 1.5em !important;  /* espace en bas */
+    margin-bottom: 1.5em !important;
     margin-top: 0 !important;
     border-radius: 2em;
     box-shadow: 0 8px 40px rgba(0,0,0,0.07);
     position: relative;
     left: 0;
     transform: none;
-    /* Hauteur : moins en bas */
-    height: calc(90vh - 235px) !important;  /* 90vh, moins place pour header/titre, adapte 120px */
+    height: calc(90vh - 235px) !important;
     max-height: calc(90vh - 24px) !important;
     min-height: 320px !important;
   }
