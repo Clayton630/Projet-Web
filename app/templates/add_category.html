@@ -3,20 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Ajouter une Catégorie</title>
-    <!-- Bootstrap 5 -->
+    <!-- Bootstrap 5 CDN pour la mise en page, les grilles, les boutons, etc. -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- CSS admin glassy -->
+    <!-- Feuille de style admin personnalisée (effet "glass", couleurs, etc.) -->
     <link href="{{ url_for('static', filename='css/admin.css') }}" rel="stylesheet">
 </head>
 <body>
+<!-- Conteneur principal large, centré -->
 <div class="container-lg">
+    <!-- Carte "glass" qui entoure le formulaire pour l'effet visuel -->
     <div class="glass-card my-5">
+        <!-- Titre principal, centré avec espace en bas -->
         <h1 class="mb-4 text-center">Ajouter une Catégorie</h1>
+        <!-- Formulaire d'ajout de catégorie, envoi POST sur la même page -->
         <form method="post" autocomplete="off">
+            <!-- Champ texte pour le nom de la catégorie -->
             <div class="mb-4">
                 <label for="nom" class="form-label">Nom</label>
                 <input type="text" id="nom" name="nom" class="form-control" required>
             </div>
+            <!-- Ligne de boutons : 
+                - "Ajouter" (valide le formulaire)
+                - "Annuler" (retour à la liste des catégories)
+                - Sur mobile : vertical, sur desktop : horizontal avec écart -->
             <div class="d-flex flex-column flex-md-row gap-2">
                 <button type="submit" class="btn btn-main flex-fill">Ajouter</button>
                 <a href="{{ url_for('main.categories') }}" class="btn btn-outline-back flex-fill">Annuler</a>
@@ -24,7 +33,7 @@
         </form>
     </div>
 </div>
-<!-- Bootstrap JS -->
+<!-- Bootstrap JS pour que les composants interactifs (modal, alert…) fonctionnent -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

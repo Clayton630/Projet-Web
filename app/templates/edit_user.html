@@ -3,34 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Modifier l'utilisateur</title>
-    <!-- Bootstrap 5 -->
+    <!-- Bootstrap 5 : pour le responsive, boutons, formulaire, layout -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- CSS admin glassy -->
+    <!-- admin.css : ton style "verre", pastel, arrondi, ombre -->
     <link href="{{ url_for('static', filename='css/admin.css') }}" rel="stylesheet">
 </head>
 <body>
+<!-- Grand conteneur Bootstrap, largeur large -->
 <div class="container-lg">
+    <!-- Card effet vitre centrée avec marges verticales -->
     <div class="glass-card my-5">
+        <!-- Titre principal de la page, centré -->
         <h1 class="mb-4 text-center">Modifier l’utilisateur</h1>
+        <!-- Formulaire de modification utilisateur -->
         <form action="" method="post" autocomplete="off">
+            <!-- Champ Nom prérempli -->
             <div class="mb-3">
                 <label for="nom" class="form-label">Nom</label>
                 <input type="text" class="form-control" id="nom" name="nom" value="{{ user.nom }}" required>
             </div>
+            <!-- Champ Email prérempli -->
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
             </div>
+            <!-- Champ mot de passe : vide = on ne modifie pas le mot de passe -->
             <div class="mb-3">
-                <label for="mot_de_passe" class="form-label">Mot de passe <span class="text-muted" style="font-weight:400;">(laisser vide pour ne pas changer)</span></label>
+                <label for="mot_de_passe" class="form-label">Mot de passe 
+                    <span class="text-muted" style="font-weight:400;">
+                        (laisser vide pour ne pas changer)
+                    </span>
+                </label>
                 <input type="password" class="form-control" id="mot_de_passe" name="mot_de_passe" placeholder="Nouveau mot de passe">
             </div>
+            <!-- Checkbox admin : cochée si user déjà admin -->
             <div class="form-check mb-4">
                 <input type="checkbox" class="form-check-input" id="isadmin" name="isadmin" {% if user.isadmin %}checked{% endif %}>
                 <label class="form-check-label" for="isadmin">Admin</label>
             </div>
+            <!-- Bouton pour soumettre le formulaire -->
             <button type="submit" class="btn btn-main w-100 mb-3">Modifier</button>
         </form>
+        <!-- Bouton retour dashboard, centré -->
         <div class="d-flex justify-content-center">
             <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-back">
                 &larr; Retour au dashboard
@@ -38,7 +52,7 @@
         </div>
     </div>
 </div>
-<!-- Bootstrap JS -->
+<!-- Bootstrap JS (optionnel) pour dropdown/modal/etc -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
