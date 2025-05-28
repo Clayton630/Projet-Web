@@ -1,4 +1,4 @@
-"""Routes principales de l’application Flask, version sécurisée."""
+"""Routes principales de l’application Flask, version totalement sécurisée."""
 
 from datetime import date
 from functools import wraps
@@ -101,7 +101,7 @@ def add_user():
         nom = request.form["nom"]
         email = request.form["email"]
         mot_de_passe = User.hash_password(request.form["mot_de_passe"])
-        isadmin = request.form.get("isadmin") == "on"
+        isadmin = False  # Sécurité ! Jamais admin via ce formulaire public
         if User.query.filter_by(email=email).first():
             flash("L’e-mail est déjà utilisé.", "danger")
             return redirect(url_for("main.add_user"))
