@@ -51,8 +51,8 @@ main = Blueprint("main", __name__)
 
 @main.route("/")
 def index():
-    """Redirige vers la page de connexion."""
-    return redirect(url_for("main.login"))
+    """Redirige vers la page d'accueil."""
+    return redirect(url_for("main.home"))
 
 @main.route("/login", methods=["GET", "POST"])
 def login():
@@ -156,11 +156,10 @@ def delete_user(id):
     return redirect(url_for("main.dashboard"))
 
 # --------------------------------------------------------------------------- #
-# Accueil utilisateur (carte)
+# Accueil utilisateur (carte) -- ACCÈS PUBLIC (plus de @login_required)
 # --------------------------------------------------------------------------- #
 
 @main.route("/home")
-@login_required
 def home():
     """Affiche la carte interactive et ses données."""
     etablissements_json = []
@@ -304,11 +303,10 @@ def delete_category(id):
     return redirect(url_for("main.categories"))
 
 # --------------------------------------------------------------------------- #
-# Panneau latéral : fiche établissement (fragment AJAX)
+# Panneau latéral : fiche établissement (fragment AJAX) -- ACCÈS PUBLIC
 # --------------------------------------------------------------------------- #
 
 @main.route("/fiche_etablissement_fragment/<int:id>")
-@login_required
 def fiche_etablissement_fragment(id):
     """Retourne le fragment HTML fiche-établissement."""
     etab = Etablissement.query.get_or_404(id)
@@ -321,9 +319,11 @@ def fiche_etablissement_fragment(id):
     )
     notes = [a.note for a, _ in avis]
     moyenne = round(sum(notes) / len(notes), 2) if notes else None
-    mon_avis = Retour.query.filter_by(
-        id_user=current_user.id_user, id_etab=id
-    ).first()
+    mon_avis = None
+    if current_user.is_authenticated:
+        mon_avis = Retour.query.filter_by(
+            id_user=current_user.id_user, id_etab=id
+        ).first()
     return render_template(
         "fiche_etablissement_panel.html",
         etablissement=etab,
@@ -333,7 +333,7 @@ def fiche_etablissement_fragment(id):
     )
 
 # --------------------------------------------------------------------------- #
-# Gestion des avis (public/user, admin seulement pour suppression commentaire)
+# Gestion des avis (POST BLOQUÉ pour non connectés)
 # --------------------------------------------------------------------------- #
 
 @main.route("/delete_commentaire/<id_retour>", methods=["POST"])
