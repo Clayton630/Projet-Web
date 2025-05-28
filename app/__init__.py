@@ -4,6 +4,7 @@
 from flask import Flask                    # Le cœur du framework web Flask
 from flask_sqlalchemy import SQLAlchemy    # Pour gérer la base de données SQL facilement (ORM)
 from flask_login import LoginManager       # Pour gérer l’authentification (sessions, utilisateurs connectés)
+from flask_migrate import Migrate
 
 # On crée une instance SQLAlchemy, sans l’associer tout de suite à l’application
 db = SQLAlchemy()
