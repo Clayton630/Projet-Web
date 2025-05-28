@@ -73,7 +73,7 @@ def logout():
     """Termine la session courante."""
     logout_user()
     flash("Déconnexion réussie.", "success")
-    return redirect(url_for("main.login"))
+    return redirect(url_for("main.home"))
 
 # --------------------------------------------------------------------------- #
 # Tableau de bord administrateur
