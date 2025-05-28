@@ -1,6 +1,7 @@
-"""Routes principales de l’application Flask."""
+"""Routes principales de l’application Flask, version totalement sécurisée."""
 
 from datetime import date
+from functools import wraps
 
 from flask import (
     Blueprint,
@@ -21,17 +22,37 @@ from sqlalchemy import func
 from . import db
 from .models import Category, Etablissement, Retour, User
 
-main = Blueprint("main", __name__)
+# --------------------------------------------------------------------------- #
+# 1. DÉCORATEUR : ADMIN REQUIRED
+# --------------------------------------------------------------------------- #
 
+def admin_required(f):
+    """
+    Décorateur pour sécuriser l’accès à une route :
+    - L’utilisateur doit être connecté ET admin.
+    - Sinon, il est redirigé avec un message d’erreur.
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not getattr(current_user, "isadmin", False):
+            flash("Accès réservé aux administrateurs.", "danger")
+            return redirect(url_for("main.home"))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# --------------------------------------------------------------------------- #
+# 2. Blueprint principal
+# --------------------------------------------------------------------------- #
+main = Blueprint("main", __name__)
 
 # --------------------------------------------------------------------------- #
 # Authentification
 # --------------------------------------------------------------------------- #
+
 @main.route("/")
 def index():
     """Redirige vers la page de connexion."""
     return redirect(url_for("main.login"))
-
 
 @main.route("/login", methods=["GET", "POST"])
 def login():
@@ -47,7 +68,6 @@ def login():
         flash("Identifiants incorrects.", "danger")
     return render_template("login.html")
 
-
 @main.route("/logout")
 def logout():
     """Termine la session courante."""
@@ -55,32 +75,33 @@ def logout():
     flash("Déconnexion réussie.", "success")
     return redirect(url_for("main.login"))
 
-
 # --------------------------------------------------------------------------- #
 # Tableau de bord administrateur
 # --------------------------------------------------------------------------- #
+
 @main.route("/dashboard")
 @login_required
+@admin_required
 def dashboard():
     """Liste tous les utilisateurs (admin seulement)."""
-    if not current_user.isadmin:
-        flash("Accès réservé aux administrateurs.", "danger")
-        return redirect(url_for("main.home"))
     users = User.query.all()
     return render_template("dashboard.html", users=users)
 
+# --------------------------------------------------------------------------- #
+# Gestion des utilisateurs (admin uniquement)
+# --------------------------------------------------------------------------- #
 
-# --------------------------------------------------------------------------- #
-# Gestion des utilisateurs
-# --------------------------------------------------------------------------- #
 @main.route("/add_user", methods=["GET", "POST"])
 def add_user():
-    """Crée un compte public."""
+    """
+    Crée un compte public. (PAS admin !)
+    Uniquement accessible aux non-connectés ou pour s’inscrire en tant que simple user.
+    """
     if request.method == "POST":
         nom = request.form["nom"]
         email = request.form["email"]
         mot_de_passe = User.hash_password(request.form["mot_de_passe"])
-        isadmin = request.form.get("isadmin") == "on"
+        isadmin = False  # Sécurité ! Jamais admin via ce formulaire public
         if User.query.filter_by(email=email).first():
             flash("L’e-mail est déjà utilisé.", "danger")
             return redirect(url_for("main.add_user"))
@@ -89,14 +110,11 @@ def add_user():
         return redirect(url_for("main.login"))
     return render_template("add_user.html")
 
-
 @main.route("/add_user_protected", methods=["POST"])
 @login_required
+@admin_required
 def add_user_protected():
-    """Ajoute un compte (admin)."""
-    if not current_user.isadmin:
-        flash("Vous n’avez pas les droits nécessaires.", "danger")
-        return redirect(url_for("main.dashboard"))
+    """Ajoute un compte (admin uniquement)."""
     User.add(
         request.form["nom"],
         request.form["email"],
@@ -106,11 +124,11 @@ def add_user_protected():
     flash("Utilisateur ajouté.", "success")
     return redirect(url_for("main.dashboard"))
 
-
 @main.route("/edit_user/<int:id>", methods=["GET", "POST"])
 @login_required
+@admin_required
 def edit_user(id):
-    """Modifie un utilisateur (admin)."""
+    """Modifie un utilisateur (admin uniquement)."""
     user = User.query.get_or_404(id)
     if request.method == "POST":
         mot_de_passe = (
@@ -128,19 +146,19 @@ def edit_user(id):
         return redirect(url_for("main.dashboard"))
     return render_template("edit_user.html", user=user)
 
-
 @main.route("/delete_user/<int:id>", methods=["POST"])
 @login_required
+@admin_required
 def delete_user(id):
-    """Supprime un utilisateur (admin)."""
+    """Supprime un utilisateur (admin uniquement)."""
     User.query.get_or_404(id).delete()
     flash("Utilisateur supprimé.", "success")
     return redirect(url_for("main.dashboard"))
 
-
 # --------------------------------------------------------------------------- #
 # Accueil utilisateur (carte)
 # --------------------------------------------------------------------------- #
+
 @main.route("/home")
 @login_required
 def home():
@@ -170,25 +188,24 @@ def home():
         categories=categories,
     )
 
+# --------------------------------------------------------------------------- #
+# Gestion des établissements (admin uniquement)
+# --------------------------------------------------------------------------- #
 
-# --------------------------------------------------------------------------- #
-# Gestion des établissements
-# --------------------------------------------------------------------------- #
 @main.route("/etablissements")
 @login_required
+@admin_required
 def etablissements():
-    """Liste les établissements (admin)."""
-    if not current_user.isadmin:
-        flash("Accès réservé aux administrateurs.", "danger")
-        return redirect(url_for("main.home"))
+    """Liste les établissements (admin uniquement)."""
     return render_template(
         "etablissements.html", etablissements=Etablissement.query.all()
     )
 
-
 @main.route("/add_etablissement", methods=["GET", "POST"])
+@login_required
+@admin_required
 def add_etablissement():
-    """Ajoute un nouvel établissement."""
+    """Ajoute un nouvel établissement (admin uniquement)."""
     if request.method == "POST":
         Etablissement.add(
             request.form["nom"],
@@ -201,10 +218,11 @@ def add_etablissement():
         return redirect(url_for("main.etablissements"))
     return render_template("add_etablissement.html", categories=Category.query.all())
 
-
 @main.route("/edit_etablissement/<int:id>", methods=["GET", "POST"])
+@login_required
+@admin_required
 def edit_etablissement(id):
-    """Modifie un établissement existant."""
+    """Modifie un établissement (admin uniquement)."""
     etablissement = Etablissement.query.get_or_404(id)
     if request.method == "POST":
         etablissement.nom = request.form["nom"]
@@ -221,10 +239,11 @@ def edit_etablissement(id):
         categories=Category.query.all(),
     )
 
-
 @main.route("/delete_etablissement/<int:id>", methods=["POST"])
+@login_required
+@admin_required
 def delete_etablissement(id):
-    """Supprime un établissement."""
+    """Supprime un établissement (admin uniquement)."""
     etab = Etablissement.query.get(id)
     if etab:
         db.session.delete(etab)
@@ -234,19 +253,22 @@ def delete_etablissement(id):
         flash("Établissement non trouvé.", "danger")
     return redirect(url_for("main.etablissements"))
 
+# --------------------------------------------------------------------------- #
+# Gestion des catégories (admin uniquement)
+# --------------------------------------------------------------------------- #
 
-# --------------------------------------------------------------------------- #
-# Gestion des catégories
-# --------------------------------------------------------------------------- #
 @main.route("/categories")
+@login_required
+@admin_required
 def categories():
-    """Liste les catégories."""
+    """Liste les catégories (admin uniquement)."""
     return render_template("categories.html", categories=Category.query.all())
 
-
 @main.route("/add_category", methods=["GET", "POST"])
+@login_required
+@admin_required
 def add_category():
-    """Ajoute une catégorie."""
+    """Ajoute une catégorie (admin uniquement)."""
     if request.method == "POST":
         db.session.add(Category(nom=request.form["nom"]))
         db.session.commit()
@@ -254,10 +276,11 @@ def add_category():
         return redirect(url_for("main.categories"))
     return render_template("add_category.html")
 
-
 @main.route("/edit_category/<int:id>", methods=["GET", "POST"])
+@login_required
+@admin_required
 def edit_category(id):
-    """Modifie une catégorie existante."""
+    """Modifie une catégorie existante (admin uniquement)."""
     category = Category.query.get_or_404(id)
     if request.method == "POST":
         category.nom = request.form["nom"]
@@ -266,10 +289,11 @@ def edit_category(id):
         return redirect(url_for("main.categories"))
     return render_template("edit_category.html", category=category)
 
-
 @main.route("/delete_category/<int:id>", methods=["POST"])
+@login_required
+@admin_required
 def delete_category(id):
-    """Supprime une catégorie."""
+    """Supprime une catégorie (admin uniquement)."""
     category = Category.query.get(id)
     if category:
         db.session.delete(category)
@@ -279,10 +303,10 @@ def delete_category(id):
         flash("Catégorie non trouvée.", "danger")
     return redirect(url_for("main.categories"))
 
-
 # --------------------------------------------------------------------------- #
 # Panneau latéral : fiche établissement (fragment AJAX)
 # --------------------------------------------------------------------------- #
+
 @main.route("/fiche_etablissement_fragment/<int:id>")
 @login_required
 def fiche_etablissement_fragment(id):
@@ -308,14 +332,14 @@ def fiche_etablissement_fragment(id):
         mon_avis=mon_avis,
     )
 
+# --------------------------------------------------------------------------- #
+# Gestion des avis (public/user, admin seulement pour suppression commentaire)
+# --------------------------------------------------------------------------- #
 
-# --------------------------------------------------------------------------- #
-# Gestion des avis
-# --------------------------------------------------------------------------- #
 @main.route("/delete_commentaire/<id_retour>", methods=["POST"])
 @login_required
 def delete_commentaire(id_retour):
-    """Supprime un commentaire (admin ou propriétaire)."""
+    """Supprime un commentaire (admin ou propriétaire du commentaire)."""
     avis = Retour.query.get_or_404(id_retour)
     if current_user.isadmin or avis.id_user == current_user.id_user:
         db.session.delete(avis)
@@ -324,7 +348,6 @@ def delete_commentaire(id_retour):
     else:
         flash("Action non autorisée.", "danger")
     return redirect(url_for("main.home"))
-
 
 @main.route("/etablissement/<int:id>", methods=["POST"])
 @login_required
