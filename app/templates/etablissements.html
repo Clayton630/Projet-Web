@@ -3,17 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Liste des Établissements</title>
-    <!-- Bootstrap 5 CDN -->
+    <!-- Bootstrap 5 pour la structure, la table, les boutons, le responsive -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Ton CSS admin glassy -->
+    <!-- admin.css : ton style "verre" (glass) pour les cards -->
     <link href="{{ url_for('static', filename='css/admin.css') }}" rel="stylesheet">
-    <!-- Bootstrap Icons (pour l'admin) -->
+    <!-- Bootstrap Icons pour les icônes d'action (poubelle, crayon, +) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 <body>
+<!-- Grand conteneur central Bootstrap -->
 <div class="container-lg">
+    <!-- Card effet vitre, marges en bas -->
     <div class="glass-card mb-5">
-        <h1 class="mb-4 text-center">Liste des <span class="text-primary">Établissements</span></h1>
+        <!-- Titre principal centré, "Établissements" en bleu -->
+        <h1 class="mb-4 text-center">
+            Liste des <span class="text-primary">Établissements</span>
+        </h1>
+        <!-- Table responsive avec effet verre (class glass-table), overflow horizontal auto -->
         <div class="table-responsive mb-4">
             <table class="table align-middle table-hover glass-table">
                 <thead>
@@ -35,13 +41,15 @@
                         <td>{{ etablissement.adresse }}</td>
                         <td>{{ etablissement.latitude }}</td>
                         <td>{{ etablissement.longitude }}</td>
+                        <!-- Bouton supprimer (poubelle), formulaire POST pour sécurité -->
                         <td>
                             <form action="{{ url_for('main.delete_etablissement', id=etablissement.id_etab) }}" method="post" style="display:inline;">
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer cet établissement ?')">
-                                    <i class="bi bi-x-lg"></i> 
+                                    <i class="bi bi-x-lg"></i>
                                 </button>
                             </form>
                         </td>
+                        <!-- Bouton modifier (crayon), lien vers page édition -->
                         <td>
                             <a href="{{ url_for('main.edit_etablissement', id=etablissement.id_etab) }}" class="btn btn-primary btn-sm">
                                 <i class="bi bi-pencil"></i>
@@ -52,6 +60,7 @@
                 </tbody>
             </table>
         </div>
+        <!-- Boutons de navigation en bas de la page -->
         <div class="d-flex flex-column flex-md-row justify-content-center gap-2">
             <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-back">
                 &larr; Retour au dashboard
@@ -62,7 +71,7 @@
         </div>
     </div>
 </div>
-<!-- Bootstrap JS -->
+<!-- Bootstrap JS pour le responsive et les composants interactifs -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

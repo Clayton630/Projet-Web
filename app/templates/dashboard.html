@@ -4,15 +4,22 @@
     <meta charset="UTF-8">
     <title>Tableau de bord Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap + Bootstrap Icons -->
+    <!-- Bootstrap 5 pour la grille, les boutons, la table -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons pour les icônes stylées -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <!-- Ton CSS admin personnalisé pour l'effet glassmorphism -->
     <link href="{{ url_for('static', filename='css/admin.css') }}" rel="stylesheet">
 </head>
 <body>
+  <!-- Grand conteneur centralisé (max-width large) -->
   <div class="container-lg">
+    <!-- Card effet vitre pour l'ensemble du dashboard -->
     <div class="glass-card mb-5">
+        <!-- Titre principal du dashboard -->
         <h1 class="mb-3">Tableau de bord <span class="text-primary">Admin</span></h1>
+        
+        <!-- Bloc affiché seulement si utilisateur NON connecté -->
         {% if not current_user.is_authenticated %}
             <h2 class="fs-4 mt-4 mb-3">Créer un utilisateur</h2>
             <form action="/add_user" method="post" class="mb-3">
@@ -30,6 +37,7 @@
                         <input type="password" class="form-control" id="mot_de_passe" name="mot_de_passe" required>
                     </div>
                 </div>
+                <!-- Checkbox admin pour création de compte admin -->
                 <div class="form-check mb-3">
                     <input type="checkbox" class="form-check-input" id="isadmin" name="isadmin">
                     <label class="form-check-label" for="isadmin">Admin</label>
@@ -37,6 +45,7 @@
                 <button type="submit" class="btn btn-main w-100">Ajouter</button>
             </form>
         {% else %}
+            <!-- Bloc affiché si utilisateur connecté -->
             <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-2">
                 <p class="mb-0">
                     <span class="fw-bold">Connecté en tant que :</span> {{ current_user.nom }}
@@ -46,6 +55,7 @@
             <a href="{{ url_for('main.home') }}" class="btn btn-outline-back mb-4">Aller à la page principale</a>
         {% endif %}
 
+        <!-- Tableau des utilisateurs enregistrés (toujours affiché) -->
         <h2 class="fs-4 mb-3 mt-4">Utilisateurs enregistrés</h2>
         <div class="table-responsive mb-3">
             <table class="table align-middle table-hover glass-table">
@@ -70,7 +80,9 @@
                             {% endif %}
                         </td>
                         <td>
+                            <!-- Lien modifier (ouvre le formulaire d'édition) -->
                             <a href="{{ url_for('main.edit_user', id=user.id_user) }}" class="btn btn-sm btn-outline-primary me-1">Modifier</a>
+                            <!-- Bouton supprimer (formulaire POST, avec confirmation JS) -->
                             <form action="{{ url_for('main.delete_user', id=user.id_user) }}" method="post" style="display:inline;">
                                 <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Supprimer cet utilisateur ?')">Supprimer</button>
                             </form>
@@ -81,6 +93,7 @@
             </table>
         </div>
 
+        <!-- Sommaire avec raccourcis vers autres pages importantes -->
         <h2 class="fs-5 mt-5 mb-2">Sommaire</h2>
         <div class="d-flex flex-column flex-md-row gap-2">
             <a href="{{ url_for('main.etablissements') }}" class="btn btn-main flex-fill">
@@ -92,6 +105,7 @@
         </div>
     </div>
   </div>
+  <!-- Bootstrap JS pour activer tous les composants interactifs -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -3,57 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <title>Connexion</title>
+    <!-- Feuille de style custom (effets glass, boutons, etc.) -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <!-- CSS Leaflet pour la carte en fond -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <!-- Pour que la page soit bien responsive sur mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <!-- MAP EN BACKGROUND -->
+    <!-- ======== MAP EN FOND DE PAGE (plein écran, non interactive) ======== -->
     <div id="bg-map"></div>
+
+    <!-- ======== CARD CENTRÉE POUR LE LOGIN ======== -->
     <div class="login-container">
         <form action="{{ url_for('main.login') }}" method="post" class="glass-form" style="text-align: center;">
+            <!-- Titre -->
             <h1 class="vo-title">Connexion</h1>
 
+            <!-- Champ email (avec wrapper pour même style que recherche home) -->
             <div class="search-wrapper">
                 <input type="email" name="email" placeholder="Email" id="searchInput" required>
             </div>
+            <!-- Champ mot de passe (idem style) -->
             <div class="search-wrapper">
                 <input type="password" name="mot_de_passe" placeholder="Mot de passe" id="searchInput" required>
             </div>
 
+            <!-- Bouton d’action (plein width sur card, style violet glassy) -->
             <div class="action-btn-wrapper">
                 <button type="submit" class="vo-btn-action card-btn-action">Se connecter</button>
             </div>
 
+            <!-- Lien pour basculer vers l’inscription (dans la card) -->
             <p class="switch-form-link">
                 Pas encore de compte ?
                 <a href="{{ url_for('main.add_user') }}">Créez un compte ici</a>
             </p>
         </form>
     </div>
-    <!-- MAP SCRIPT -->
+
+    <!-- ======== SCRIPT MAP LEAFLET EN FOND (non interactive) ======== -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // Initialise la carte Leaflet dans le div #bg-map
         var bgMap = L.map('bg-map', {
-            zoomControl: false,
-            attributionControl: false,
-            dragging: false,
-            scrollWheelZoom: false,
-            doubleClickZoom: false,
-            boxZoom: false,
-            keyboard: false,
-            tap: false,
-            touchZoom: false,
+            zoomControl: false,        // pas de boutons de zoom
+            attributionControl: false, // pas de copyright affiché
+            dragging: false,           // non déplaçable
+            scrollWheelZoom: false,    // pas de zoom à la molette
+            doubleClickZoom: false,    // pas de zoom double clic
+            boxZoom: false,            // pas de zoom rectangle
+            keyboard: false,           // touches clavier inactives
+            tap: false,                // pas de zoom/tap mobile
+            touchZoom: false,          // pas de pinch zoom
             zoomSnap: 0,
             inertia: false,
-            interactive: false
-        }).setView([43.116669, 5.93333], 13);
+            interactive: false         // toute interaction désactivée
+        }).setView([43.116669, 5.93333], 13); // Coordonnées par défaut (ex : Toulon)
 
+        // Ajoute la couche de tuiles MapTiler
         L.tileLayer('https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}@2x.png?key=1XPmmAxswHqtzHfGMCGh', {
             maxZoom: 18
         }).addTo(bgMap);
 
+        // Rend la carte insensible aux clics (z-index CSS ou JS)
         bgMap._container.style.pointerEvents = "none";
     });
     </script>

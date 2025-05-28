@@ -1,15 +1,19 @@
-<!-- fiche_etablissement_panel.html -->
-
+<!-- Titre : nom de l'établissement -->
 <h2>{{ etablissement.nom }}</h2>
+
+<!-- Catégorie de l'établissement -->
 <p>
     <strong>Catégorie :</strong>
     {{ etablissement.categorie.nom if etablissement.categorie else "Non renseignée" }}
 </p>
+
+<!-- Adresse -->
 <p>
     <strong>Adresse :</strong>
     {{ etablissement.adresse }}
 </p>
 
+<!-- Moyenne des notes (ou message si aucune note) -->
 <h3>Moyenne des notes :</h3>
 <p>
     {% if moyenne is not none %}
@@ -26,13 +30,17 @@
     <ul>
         {% for a, user in avis %}
             <li>
-                <span class="note-icon">⭐</span><strong>{{ a.note }}/5</strong>
+                <span class="note-icon">⭐</span>
+                <strong>{{ a.note }}/5</strong>
                 <span class="user-icon">👤</span>{{ user.nom }} – {{ a.date.strftime('%d/%m/%Y') if a.date else a.date }}<br>
                 <em>{{ a.commentaire }}</em>
-
-                {% if current_user.isadmin %}
+                
+                <!-- Suppression (admin uniquement) -->
+                {% if current_user.is_authenticated and current_user.isadmin %}
                     <form method="POST" action="{{ url_for('main.delete_commentaire', id_retour=a.id_retour) }}">
-                        <button type="submit" class="btn-supprimer" onclick="return confirm('Supprimer ce commentaire ?')">Supprimer</button>
+                        <button type="submit" class="btn-supprimer" onclick="return confirm('Supprimer ce commentaire ?')">
+                            Supprimer
+                        </button>
                     </form>
                 {% endif %}
             </li>
@@ -45,65 +53,73 @@
 <div class="section-separator"></div>
 
 <h3>Votre avis</h3>
-{% if mon_avis %}
-    {% if request.args.get('edit') == '1' %}
+{% if current_user.is_authenticated %}
+    {% if mon_avis %}
+        {% if request.args.get('edit') == '1' %}
+            <!-- Formulaire d'édition -->
+            <form method="POST" action="{{ url_for('main.gerer_avis', id=etablissement.id_etab) }}">
+                <input type="hidden" name="action" value="edit">
+                <label for="note">Note (1 à 5) :</label>
+                <select name="note" id="note" required>
+                    {% for n in range(1,6) %}
+                        <option value="{{ n }}" {% if mon_avis.note == n %}selected{% endif %}>{{ n }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+                <label for="commentaire">Commentaire :</label><br>
+                <textarea name="commentaire" id="commentaire" maxlength="150" required>{{ mon_avis.commentaire }}</textarea>
+                <br>
+                <button type="submit">Enregistrer</button>
+                <button type="button" onclick="document.getElementById('close-panel').click();">Annuler</button>
+            </form>
+        {% else %}
+            <!-- Affichage avis + boutons -->
+            <p>
+                <strong>{{ mon_avis.note }}/5</strong>
+                (Posté le {{ mon_avis.date.strftime('%d/%m/%Y') }})<br>
+                <em>{{ mon_avis.commentaire }}</em>
+            </p>
+            <div style="margin-top: 10px; display: flex; gap: 10px;">
+                <!-- Bouton supprimer -->
+                <form method="POST" action="{{ url_for('main.gerer_avis', id=etablissement.id_etab) }}">
+                    <input type="hidden" name="action" value="delete">
+                    <button type="submit" class="icon-btn red" onclick="return confirm('Supprimer votre avis ?')" title="Supprimer">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                            <path d="M3 6h18M9 6v12m6-12v12M19 6l-1.5 14.5a2 2 0 0 1-2 1.5H8.5a2 2 0 0 1-2-1.5L5 6" />
+                        </svg>
+                    </button>
+                </form>
+                <!-- Bouton modifier (AJAX) -->
+                <button type="button"
+                        class="icon-btn edit-avis-btn"
+                        data-url="{{ url_for('main.fiche_etablissement_fragment', id=etablissement.id_etab) }}?edit=1"
+                        title="Modifier">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                        <path d="M4 20h4l10-10-4-4L4 16v4zM16 4l4 4" />
+                    </svg>
+                </button>
+            </div>
+        {% endif %}
+    {% else %}
+        <!-- Formulaire d'ajout si non posté -->
         <form method="POST" action="{{ url_for('main.gerer_avis', id=etablissement.id_etab) }}">
-            <input type="hidden" name="action" value="edit">
+            <input type="hidden" name="action" value="add">
             <label for="note">Note (1 à 5) :</label>
             <select name="note" id="note" required>
                 {% for n in range(1,6) %}
-                    <option value="{{ n }}" {% if mon_avis.note == n %}selected{% endif %}>{{ n }}</option>
+                    <option value="{{ n }}">{{ n }}</option>
                 {% endfor %}
             </select>
             <br>
             <label for="commentaire">Commentaire :</label><br>
-            <textarea name="commentaire" id="commentaire" maxlength="150" required>{{ mon_avis.commentaire }}</textarea>
+            <textarea name="commentaire" id="commentaire" maxlength="150" required></textarea>
             <br>
-            <button type="submit">Enregistrer</button>
-            <button type="button" onclick="document.getElementById('close-panel').click();">Annuler</button>
+            <button type="submit">Envoyer</button>
         </form>
-    {% else %}
-        <p>
-            <strong>{{ mon_avis.note }}/5</strong>
-            (Posté le {{ mon_avis.date.strftime('%d/%m/%Y') }})<br>
-            <em>{{ mon_avis.commentaire }}</em>
-        </p>
-
-        <div style="margin-top: 10px; display: flex; gap: 10px;">
-            <!-- Supprimer -->
-            <form method="POST" action="{{ url_for('main.gerer_avis', id=etablissement.id_etab) }}">
-                <input type="hidden" name="action" value="delete">
-                <button type="submit" class="icon-btn red" onclick="return confirm('Supprimer votre avis ?')" title="Supprimer">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                        <path d="M3 6h18M9 6v12m6-12v12M19 6l-1.5 14.5a2 2 0 0 1-2 1.5H8.5a2 2 0 0 1-2-1.5L5 6" />
-                    </svg>
-                </button>
-            </form>
-
-            <!-- Modifier (AJAX) -->
-            <button type="button"
-                    class="icon-btn edit-avis-btn"
-                    data-url="{{ url_for('main.fiche_etablissement_fragment', id=etablissement.id_etab) }}?edit=1"
-                    title="Modifier">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                    <path d="M4 20h4l10-10-4-4L4 16v4zM16 4l4 4" />
-                </svg>
-            </button>
-        </div>
     {% endif %}
 {% else %}
-    <form method="POST" action="{{ url_for('main.gerer_avis', id=etablissement.id_etab) }}">
-        <input type="hidden" name="action" value="add">
-        <label for="note">Note (1 à 5) :</label>
-        <select name="note" id="note" required>
-            {% for n in range(1,6) %}
-                <option value="{{ n }}">{{ n }}</option>
-            {% endfor %}
-        </select>
-        <br>
-        <label for="commentaire">Commentaire :</label><br>
-        <textarea name="commentaire" id="commentaire" maxlength="150" required></textarea>
-        <br>
-        <button type="submit">Envoyer</button>
-    </form>
+    <!-- Pour les visiteurs non connectés -->
+    <div class="alert alert-info" style="margin-top: 1em;">
+        Connectez-vous pour déposer un avis sur cet établissement.
+    </div>
 {% endif %}
